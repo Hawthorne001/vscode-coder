@@ -1607,7 +1607,6 @@ co@3.1.0:
 
 "coder@https://github.com/coder/coder#main":
   version "0.0.0"
-  uid acd22b2c65a6ce9811123110fbf8aed5d315a0de
   resolved "https://github.com/coder/coder#acd22b2c65a6ce9811123110fbf8aed5d315a0de"
   dependencies:
     exec "^0.2.1"
@@ -4309,10 +4308,10 @@ prettier@^3.2.4:
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.2.4.tgz#4723cadeac2ce7c9227de758e5ff9b14e075f283"
   integrity sha512-FWu1oLHKCrtpO1ypU6J0SbK2d9Ckwysq6bHj/uaCP26DxrPpppCLQRGVuqAxSTvhF00AcvDRyYrLNW7ocBhFFQ==
 
-pretty-bytes@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/pretty-bytes/-/pretty-bytes-6.0.0.tgz#928be2ad1f51a2e336add8ba764739f9776a8140"
-  integrity sha512-6UqkYefdogmzqAZWzJ7laYeJnaXDy2/J+ZqiiMtS7t7OfpXWTlaeGMwX8U6EFvPV/YWWEKRkS8hKS4k60WHTOg==
+pretty-bytes@^6.1.1:
+  version "6.1.1"
+  resolved "https://registry.yarnpkg.com/pretty-bytes/-/pretty-bytes-6.1.1.tgz#38cd6bb46f47afbf667c202cfc754bffd2016a3b"
+  integrity sha512-mQUvGU6aUFQ+rNvTIAcZuWGRT9a6f6Yrg9bHs4ImKF+HZCEK+plBvnAZYSIQztknZF2qnzNtr6F8s0+IuptdlQ==
 
 pretty-format@^29.5.0:
   version "29.7.0"
