@@ -28,6 +28,52 @@ export class Commands {
   ) {}
 
   /**
+   * Find the requested agent if specified, otherwise return the agent if there
+   * is only one or ask the user to pick if there are multiple.  Return
+   * undefined if the user cancels.
+   */
+  public async maybeAskAgent(workspace: Workspace, filter?: string): Promise<WorkspaceAgent | undefined> {
+    const agents = extractAgents(workspace)
+    const filteredAgents = filter ? agents.filter((agent) => agent.name === filter) : agents
+    if (filteredAgents.length === 0) {
+      throw new Error("Workspace has no matching agents")
+    } else if (filteredAgents.length === 1) {
+      return filteredAgents[0]
+    } else {
+      const quickPick = vscode.window.createQuickPick()
+      quickPick.title = "Select an agent"
+      quickPick.busy = true
+      const agentItems: vscode.QuickPickItem[] = filteredAgents.map((agent) => {
+        let icon = "$(debug-start)"
+        if (agent.status !== "connected") {
+          icon = "$(debug-stop)"
+        }
+        return {
+          alwaysShow: true,
+          label: `${icon} ${agent.name}`,
+          detail: `${agent.name} • Status: ${agent.status}`,
+        }
+      })
+      quickPick.items = agentItems
+      quickPick.busy = false
+      quickPick.show()
+
+      const selected = await new Promise<WorkspaceAgent | undefined>((resolve) => {
+        quickPick.onDidHide(() => resolve(undefined))
+        quickPick.onDidChangeSelection((selected) => {
+          if (selected.length < 1) {
+            return resolve(undefined)
+          }
+          const agent = filteredAgents[quickPick.items.indexOf(selected[0])]
+          resolve(agent)
+        })
+      })
+      quickPick.dispose()
+      return selected
+    }
+  }
+
+  /**
    * Ask the user for the URL, letting them choose from a list of recent URLs or
    * CODER_URL or enter a new one.  Undefined means the user aborted.
    */
@@ -96,12 +142,17 @@ export class Commands {
       return
     }
 
+    // It is possible that we are trying to log into an old-style host, in which
+    // case we want to write with the provided blank label instead of generating
+    // a host label.
+    const label = typeof args[2] === "undefined" ? toSafeHost(url) : args[2]
+
     // Use a temporary client to avoid messing with the global one while trying
     // to log in.
     const restClient = await makeCoderSdk(url, undefined, this.storage)
 
     let user: User | undefined
-    let token: string | undefined = args.length >= 2 ? args[1] : undefined
+    let token: string | undefined = args[1]
     if (!token) {
       const opened = await vscode.env.openExternal(vscode.Uri.parse(`${url}/cli-auth`))
       if (!opened) {
@@ -158,7 +209,7 @@ export class Commands {
     await this.storage.setSessionToken(token)
 
     // Store on disk to be used by the cli.
-    await this.storage.configureCli(toSafeHost(url), url, token)
+    await this.storage.configureCli(label, url, token)
 
     await vscode.commands.executeCommand("setContext", "coder.authenticated", true)
     if (user.roles.find((role) => role.name === "owner")) {
@@ -214,9 +265,6 @@ export class Commands {
     // Clear from memory.
     await this.storage.setUrl(undefined)
     await this.storage.setSessionToken(undefined)
-
-    // Clear from disk.
-    await this.storage.configureCli(toSafeHost(url), undefined, undefined)
 
     await vscode.commands.executeCommand("setContext", "coder.authenticated", false)
     vscode.window.showInformationMessage("You've been logged out of Coder!", "Login").then((action) => {
@@ -374,58 +422,19 @@ export class Commands {
         })
       })
       if (!workspace) {
+        // User declined to pick a workspace.
         return
       }
       workspaceOwner = workspace.owner_name
       workspaceName = workspace.name
 
-      const agents = extractAgents(workspace)
-
-      if (agents.length === 1) {
-        folderPath = agents[0].expanded_directory
-        workspaceAgent = agents[0].name
-      } else if (agents.length > 0) {
-        const agentQuickPick = vscode.window.createQuickPick()
-        agentQuickPick.title = `Select an agent`
-
-        agentQuickPick.busy = true
-        const lastAgents = agents
-        const agentItems: vscode.QuickPickItem[] = agents.map((agent) => {
-          let icon = "$(debug-start)"
-          if (agent.status !== "connected") {
-            icon = "$(debug-stop)"
-          }
-          return {
-            alwaysShow: true,
-            label: `${icon} ${agent.name}`,
-            detail: `${agent.name} • Status: ${agent.status}`,
-          }
-        })
-        agentQuickPick.items = agentItems
-        agentQuickPick.busy = false
-        agentQuickPick.show()
-
-        const agent = await new Promise<WorkspaceAgent | undefined>((resolve) => {
-          agentQuickPick.onDidHide(() => {
-            resolve(undefined)
-          })
-          agentQuickPick.onDidChangeSelection((selected) => {
-            if (selected.length < 1) {
-              return resolve(undefined)
-            }
-            const agent = lastAgents[agentQuickPick.items.indexOf(selected[0])]
-            resolve(agent)
-          })
-        })
-
-        if (agent) {
-          folderPath = agent.expanded_directory
-          workspaceAgent = agent.name
-        } else {
-          folderPath = ""
-          workspaceAgent = ""
-        }
+      const agent = await this.maybeAskAgent(workspace)
+      if (!agent) {
+        // User declined to pick an agent.
+        return
       }
+      folderPath = agent.expanded_directory
+      workspaceAgent = agent.name
     } else {
       workspaceOwner = args[0] as string
       workspaceName = args[1] as string

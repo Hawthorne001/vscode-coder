@@ -4,7 +4,7 @@
   "displayName": "Coder",
   "description": "Open any workspace with a single click.",
   "repository": "https://github.com/coder/vscode-coder",
-  "version": "0.1.37",
+  "version": "1.3.0",
   "engines": {
     "vscode": "^1.73.0"
   },
@@ -85,6 +85,11 @@
         },
         "coder.tlsCaFile": {
           "markdownDescription": "Path to file for TLS certificate authority",
+          "type": "string",
+          "default": ""
+        },
+        "coder.proxyBypass": {
+          "markdownDescription": "If not set, will inherit from the `no_proxy` or `NO_PROXY` environment variables. `http.proxySupport` must be set to `on` or `off`, otherwise VS Code will override the proxy agent set by the plugin.",
           "type": "string",
           "default": ""
         }
@@ -245,16 +250,15 @@
   },
   "devDependencies": {
     "@types/eventsource": "^1.1.15",
-    "@types/fs-extra": "^11.0.4",
     "@types/glob": "^7.1.3",
-    "@types/ndjson": "^2.0.1",
     "@types/node": "^18.0.0",
+    "@types/node-forge": "^1.3.11",
+    "@types/ua-parser-js": "^0.7.39",
     "@types/vscode": "^1.73.0",
-    "@types/which": "^2.0.1",
     "@types/ws": "^8.5.10",
-    "@typescript-eslint/eslint-plugin": "^6.19.1",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
-    "@vscode/test-electron": "^2.3.10",
+    "@vscode/test-electron": "^2.4.0",
     "@vscode/vsce": "^2.21.1",
     "bufferutil": "^4.0.8",
     "coder": "https://github.com/coder/coder#main",
@@ -264,7 +268,7 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-md": "^1.0.19",
     "eslint-plugin-prettier": "^5.1.3",
-    "glob": "^7.1.6",
+    "glob": "^10.4.2",
     "nyc": "^15.1.0",
     "prettier": "^3.2.5",
     "ts-loader": "^9.5.1",
@@ -273,32 +277,26 @@
     "utf-8-validate": "^6.0.4",
     "vitest": "^0.34.6",
     "vscode-test": "^1.5.0",
-    "webpack": "^5.89.0",
+    "webpack": "^5.92.0",
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "@types/node-forge": "^1.3.11",
-    "@types/ua-parser-js": "^0.7.39",
     "axios": "1.6.8",
     "date-fns": "^3.6.0",
     "eventsource": "^2.0.2",
     "find-process": "^1.4.7",
-    "fs-extra": "^11.2.0",
     "jsonc-parser": "^3.2.1",
     "memfs": "^4.9.2",
-    "ndjson": "^2.0.0",
     "node-forge": "^1.3.1",
     "pretty-bytes": "^6.0.0",
-    "semver": "^7.6.0",
-    "tar-fs": "^2.1.1",
-    "ua-parser-js": "^1.0.37",
-    "which": "^4.0.0",
-    "ws": "^8.17.0",
-    "yaml": "^2.4.2",
-    "zod": "^3.22.3"
+    "proxy-agent": "^6.4.0",
+    "semver": "^7.6.2",
+    "ua-parser-js": "^1.0.38",
+    "ws": "^8.17.1",
+    "zod": "^3.23.8"
   },
   "resolutions": {
-    "semver": "7.6.0",
+    "semver": "7.6.2",
     "trim": "0.0.3",
     "word-wrap": "1.2.5"
   }

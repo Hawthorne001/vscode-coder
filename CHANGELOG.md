@@ -2,6 +2,74 @@
 
 ## Unreleased
 
+## [v1.3.0](https://github.com/coder/vscode-coder/releases/tag/v1.3.0) (2024-07-01)
+
+### Added
+
+- If there are multiple agents, the plugin will now ask which to use.
+
+### Fixed
+
+- If the workspace is stopping as the plugin tries to connect, it will wait for
+  the stop and then try to start the workspace. Previously it would only start
+  the workspace if it happened to be in a fully stopped state when connecting.
+- Whenever the plugin wants to start a workspace, it will ask the user first to
+  prevent constantly keeping a workspace up and defeating the point of
+  auto-stop.
+
+## [v1.2.1](https://github.com/coder/vscode-coder/releases/tag/v1.2.1) (2024-06-25)
+
+### Fixed
+
+- Fix the update dialog continually reappearing.
+
+## [v1.2.0](https://github.com/coder/vscode-coder/releases/tag/v1.2.0) (2024-06-21)
+
+### Added
+
+- New setting `coder.proxyBypass` which is the equivalent of `no_proxy`. This
+  only takes effect if `http.proxySupport` is `on` or `off`, otherwise VS Code
+  overrides the HTTP agent the plugin sets.
+
+## [v1.1.0](https://github.com/coder/vscode-coder/releases/tag/v1.1.0) (2024-06-17)
+
+### Added
+
+- Workspace and agent statuses now show in the sidebar. These are updated every
+  five seconds.
+- Support `http.proxy` setting and proxy environment variables. These only take
+  effect if `http.proxySupport` is `on` or `off`, otherwise VS Code overrides
+  the HTTP agent the plugin sets.
+
+## [v1.0.2](https://github.com/coder/vscode-coder/releases/tag/v1.0.2) (2024-06-12)
+
+### Fixed
+
+- Redirects will now be followed when watching a workspace build, like when a
+  workspace is automatically started.
+
+## [v1.0.1](https://github.com/coder/vscode-coder/releases/tag/v1.0.1) (2024-06-07)
+
+### Changed
+
+- Improve an error message for when watching a build fails.
+
+## [v1.0.0](https://github.com/coder/vscode-coder/releases/tag/v1.0.0) (2024-06-05)
+
+### Added
+
+- Support opening workspaces that belong to a different deployment than the one
+  which is currently logged in. This will only work for new connections. If you
+  have an existing connection that errors when connecting because of this,
+  please connect it again using the plugin or the Coder dashboard. Optionally,
+  you may also want to delete your old workspaces from the recents list.
+
+### Fixed
+
+- Escape variables in the header command. If you have a variable in the header
+  command itself, like `echo TEST=$CODER_URL`, it will now work as expected
+  instead of being substituted with a blank or erroneous value.
+
 ## [v0.1.37](https://github.com/coder/vscode-coder/releases/tag/v0.1.37) (2024-05-24)
 
 ### Added

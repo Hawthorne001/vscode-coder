@@ -119,8 +119,6 @@ export class Storage {
    */
   public async fetchBinary(restClient: Api, label: string): Promise<string> {
     const baseUrl = restClient.getAxiosInstance().defaults.baseURL
-    this.output.appendLine(`Using deployment URL: ${baseUrl}`)
-    this.output.appendLine(`Using deployment label: ${label || "n/a"}`)
 
     // Settings can be undefined when set to their defaults (true in this case),
     // so explicitly check against false.
@@ -485,8 +483,8 @@ export class Storage {
     const tokenPath = this.getSessionTokenPath(label)
     const [url, token] = await Promise.allSettled([fs.readFile(urlPath, "utf8"), fs.readFile(tokenPath, "utf8")])
     return {
-      url: url.status === "fulfilled" ? url.value : "",
-      token: token.status === "fulfilled" ? token.value : "",
+      url: url.status === "fulfilled" ? url.value.trim() : "",
+      token: token.status === "fulfilled" ? token.value.trim() : "",
     }
   }
 
